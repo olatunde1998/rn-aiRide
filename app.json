@@ -8,6 +8,11 @@
     "scheme": "ai-ride",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#2F80ED"
+    },
     "ios": {
       "supportsTablet": true,
       "package": "com.geodevcode.airide"
@@ -15,7 +20,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#2F80ED"
       },
       "package": "com.geodevcode.airide"
     },
@@ -30,9 +35,8 @@
         "expo-splash-screen",
         {
           "image": "./assets/images/adaptive-icon.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "resizeMode": "cover",
+          "backgroundColor": "#2F80ED"
         }
       ]
     ],
