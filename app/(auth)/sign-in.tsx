@@ -2,32 +2,49 @@ import { View, Text, ScrollView, Image, Alert } from "react-native";
 import React, { useState } from "react";
 import images from "@/constants/images";
 import FormField from "@/components/FormField";
-import { Link, router } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import CustomButton from "@/components/CustomButton";
 import icons from "@/constants/icons";
 import OAuth from "@/components/OAuth";
+import { useSignIn } from "@clerk/clerk-expo";
 
 const SignInPage = () => {
-  const [isSubmitting, setSubmitting] = useState(false);
+  const { signIn, setActive, isLoaded } = useSignIn();
+  const router = useRouter();
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
 
-  const submitHandler = async () => {
-    // if (form.email === "" || form.password === "") {
-    //   Alert.alert("Error", "Please fill in all fields");
-    // }
-    setSubmitting(true);
+
+  // Handle the submission of the sign-in form
+  const onSignInPress = async () => {
+    if (!isLoaded) return;
+
+    // Start the sign-in process using the email and password provided
     try {
-      Alert.alert("User signed in successfully");
-      router.push("/home");
-    } catch (error: any) {
-      console.log(error, "error occurred here==");
-    } finally {
-      setSubmitting(false);
+      const signInAttempt = await signIn.create({
+        identifier: form.email,
+        password: form.password,
+      });
+
+      // If sign-in process is complete, set the created session as active
+      // and redirect the user
+      if (signInAttempt.status === "complete") {
+        await setActive({ session: signInAttempt.createdSessionId });
+        router.replace("/");
+      } else {
+        // If the status isn't complete, check why. User might need to
+        // complete further steps.
+        console.error(JSON.stringify(signInAttempt, null, 2));
+      }
+    } catch (err: any) {
+      // See https://clerk.com/docs/custom-flows/error-handling
+      // for more info on error handling
+      console.error(JSON.stringify(err.errors[0].longMessage, null, 2));
     }
   };
+
   return (
     <ScrollView className="flex-1 bg-white">
       <View className="flex-1 bg-white">
@@ -57,7 +74,7 @@ const SignInPage = () => {
           />
           <CustomButton
             title="Sign In"
-            onPress={submitHandler}
+            onPress={onSignInPress}
             className="mt-6"
           />
           <OAuth />
